@@ -2,7 +2,7 @@ import {FlatList, Text, StyleSheet, View} from "react-native";
 import {PlaceItem} from "./PlaceItem";
 
 export const PlacesList = ({places}) => {
-  if(!places.length) {
+  if(!places || !places.length) {
     return <View style={styles.fallbackContainer}>
       <Text tyle={styles.fallbackText}>No Places Yet</Text>
     </View>
