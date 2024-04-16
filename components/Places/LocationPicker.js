@@ -1,17 +1,26 @@
 import {getCurrentPositionAsync, useForegroundPermissions, PermissionStatus} from "expo-location";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {View, StyleSheet, Alert, Text, Image} from "react-native";
 import {AppButton} from "../ui/AppButton";
 import {GlobalStyles} from "../../constants/styles";
 import {getMapPreview} from "../../util/location";
 import {LoadingOverlay} from "../ui/LoadingOverlay";
-import {useNavigation} from "@react-navigation/native";
+import {useNavigation, useRoute} from "@react-navigation/native";
 
 export const LocationPicker = () => {
+  const navigate = useNavigation();
+  const route = useRoute();
   const [locationPermissionStatus, requestLocationPermission] = useForegroundPermissions();
   const [picketLocation, setPicketLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigation();
+  
+  useEffect(() => {
+    if(route.params) {
+      const mapPickedLocation =  {lat: route.params.pickedLocation.latitude, lng: route.params.pickedLocation.longitude};
+      
+      setPicketLocation(mapPickedLocation);
+    }
+  }, [route.params]);
   
   const verifyLocationPermission = async () => {
     if( locationPermissionStatus.status === PermissionStatus.UNDETERMINED) {
