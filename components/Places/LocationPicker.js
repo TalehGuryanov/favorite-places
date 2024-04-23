@@ -1,55 +1,30 @@
 import {getCurrentPositionAsync, useForegroundPermissions, PermissionStatus} from "expo-location";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 import {View, StyleSheet, Alert, Text, Image} from "react-native";
 import {AppButton} from "../ui/AppButton";
 import {GlobalStyles} from "../../constants/styles";
-import {getMapPreview} from "../../util/location";
+import {getMapPreview, getUserLocation} from "../../util/location";
 import {LoadingOverlay} from "../ui/LoadingOverlay";
-import {useNavigation, useRoute} from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
+import {useDispatch, useSelector} from "react-redux";
+import {addLocation} from "../../store/placesReducer";
 
 export const LocationPicker = () => {
+  const dispatch = useDispatch();
+  const {location} = useSelector(state => state.places);
   const navigate = useNavigation();
-  const route = useRoute();
-  const [locationPermissionStatus, requestLocationPermission] = useForegroundPermissions();
-  const [picketLocation, setPicketLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [locationPermissionStatus, requestLocationPermission] = useForegroundPermissions();
   
-  useEffect(() => {
-    if(route.params) {
-      const mapPickedLocation =  {lat: route.params.pickedLocation.latitude, lng: route.params.pickedLocation.longitude};
+  const getLocationHandler = useCallback(() => {
+    (async() => {
+      setIsLoading(true);
+      const locationPayload = await getUserLocation(locationPermissionStatus, requestLocationPermission);
       
-      setPicketLocation(mapPickedLocation);
-    }
-  }, [route.params]);
-  
-  const verifyLocationPermission = async () => {
-    if( locationPermissionStatus.status === PermissionStatus.UNDETERMINED) {
-      const permissionResponse = await requestLocationPermission();
-      
-      return permissionResponse.granted
-    }
-    
-    if(locationPermissionStatus.status === PermissionStatus.DENIED) {
-      Alert.alert('Insufficient permissions', 'You need to grant location permissions to use this app');
-      
-      return false;
-    }
-    
-    return true;
-  }
-  
-  const getLocationHandler = async () => {
-    setIsLoading(true);
-    const hasPermissions = await verifyLocationPermission();
-    
-    if(!hasPermissions) {
-      return;
-    }
-    
-    const location = await getCurrentPositionAsync();
-    setPicketLocation({lat: location.coords.latitude, lng: location.coords.longitude});
-    setIsLoading(false);
-  }
+      dispatch(addLocation(locationPayload));
+      setIsLoading(false);
+    })();
+  }, [location, dispatch])
   
   const pickOnMapHandler = () => {
     navigate.navigate('Map');
@@ -60,11 +35,11 @@ export const LocationPicker = () => {
       return <LoadingOverlay/>
     }
     
-    if(!picketLocation) {
+    if(!location || !location.latitude || !location.longitude) {
       return <Text>No location picked yet.</Text>
     }
     
-    return  <Image style={styles.image} source={{uri: getMapPreview(picketLocation.lat, picketLocation.lng)}}/>
+    return  <Image style={styles.image} source={{uri: getMapPreview(location.latitude, location.longitude)}}/>
   }
   
   return (

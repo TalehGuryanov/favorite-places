@@ -1,31 +1,48 @@
 import {View, StyleSheet, Alert} from "react-native";
 import MapView, {Marker} from 'react-native-maps';
-import {useState, useLayoutEffect} from "react";
+import {useState, useLayoutEffect, useEffect, useCallback} from "react";
 import {IconButton} from "../components/ui/IconButton";
+import {useForegroundPermissions} from "expo-location";
+import {LoadingOverlay} from "../components/ui/LoadingOverlay";
+import {useDispatch, useSelector} from "react-redux";
+import {addLocation} from "../store/placesReducer";
+import {getUserLocation} from "../util/location";
 
-export const Map = ({navigation}) => {
-  const [selectedLocation, setSelectedLocation] = useState({
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
-
+export const Map = ({navigation, route}) => {
+  const dispatch = useDispatch();
+  const {location} = useSelector(state => state.places);
+  const [isLoading, setIsLoading] = useState(false);
+  const [locationPermissionStatus, requestLocationPermission] = useForegroundPermissions();
+  
+  useEffect(() => {
+    if(!location.latitude || !location.longitude) {
+      (async () => {
+        setIsLoading(true);
+        
+        const locationPayload = await getUserLocation(locationPermissionStatus, requestLocationPermission);
+        
+        dispatch(addLocation(locationPayload))
+        setIsLoading(false);
+      })();
+    }
+  }, [dispatch, location]);
+  
   const selectLocationHandler = (event) => {
-    setSelectedLocation({
-      ...selectedLocation,
+    const locationPayload = {
       latitude: event.nativeEvent.coordinate.latitude,
       longitude: event.nativeEvent.coordinate.longitude
-    })
+    }
+    dispatch(addLocation(locationPayload))
   }
-  const savePickedLocationHandler = () => {
-    if(!selectedLocation) {
-      Alert.alert('No location picked', 'Please pick a location on the map');
-      return null;
+  
+  const savePickedLocationHandler = useCallback(() => {
+    if (!location.latitude || !location.longitude) {
+      Alert.alert("No location picked", "Please pick a location on the map");
+      return;
     }
     
-    navigation.navigate('AddPlace', {pickedLocation: selectedLocation});
-  }
+    navigation.navigate("AddPlace");
+  }, [location, navigation]);
   
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -41,21 +58,24 @@ export const Map = ({navigation}) => {
   
   return (
       <View style={styles.container}>
-        <MapView
-            style={styles.map}
-            initialRegion={selectedLocation}
-            onPress={selectLocationHandler}
-        >
-          {selectedLocation && (
-              <Marker
-                  title="Picked Location"
-                  coordinate={{
-                      latitude: selectedLocation.latitude,
-                      longitude: selectedLocation.longitude
-                  }}
-              />
-          )}
-        </MapView>
+        {isLoading ?
+            <LoadingOverlay/> :
+            <MapView
+                style={styles.map}
+                initialRegion={location}
+                onPress={selectLocationHandler}
+            >
+              {location.longitude && location.latitude && (
+                  <Marker
+                      title="Picked Location"
+                      coordinate={{
+                          latitude: location.latitude,
+                          longitude: location.longitude
+                      }}
+                  />
+              )}
+            </MapView>
+        }
       </View>
   )
 }
