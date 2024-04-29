@@ -4,17 +4,26 @@ import {useState} from "react";
 import {GlobalStyles} from "../../constants/styles";
 import {PlaceImagePicker} from "./PlaceImagePicker";
 import {LocationPicker} from "./LocationPicker";
+import {AppButton} from "../ui/AppButton";
+import {useDispatch} from "react-redux";
+import {addPlace} from "../../store/placesReducer";
 
 export const PlaceForm = () => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     title: '',
     image: '',
-    address: ''
+    location: ''
   });
+  
   const updateFormData = (inputName, value) => {
     setFormData((prevState) => {
      return  {...prevState, [inputName]: value}
     });
+  }
+  
+  const savePlaceHandler = () => {
+    dispatch(addPlace(formData))
   }
   
   return (
@@ -29,6 +38,9 @@ export const PlaceForm = () => {
         </View>
         <PlaceImagePicker/>
         <LocationPicker/>
+        <AppButton onPress={savePlaceHandler} style={styles.button}>
+          Add Place
+        </AppButton>
       </ScrollView>
   )
 };
@@ -51,5 +63,8 @@ const styles = StyleSheet.create({
     borderBottomColor: GlobalStyles.colors.primary700,
     borderBottomWidth: 2,
     backgroundColor: GlobalStyles.colors.primary100
+  },
+  button: {
+    marginTop: 8,
   }
 })
