@@ -1,29 +1,30 @@
 import {ScrollView, View, Text, TextInput, StyleSheet} from "react-native";
-import {useState} from "react";
+import {useCallback, useState} from "react";
 
 import {GlobalStyles} from "../../constants/styles";
 import {PlaceImagePicker} from "./PlaceImagePicker";
 import {LocationPicker} from "./LocationPicker";
 import {AppButton} from "../ui/AppButton";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {addPlace} from "../../store/placesReducer";
 
 export const PlaceForm = () => {
+  const {location} = useSelector(state => state.places);
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     title: '',
     image: '',
-    location: ''
+    location: location
   });
   
-  const updateFormData = (inputName, value) => {
+  const updateFormData = useCallback((inputName, value) => {
     setFormData((prevState) => {
      return  {...prevState, [inputName]: value}
     });
-  }
+  } ,[setFormData])
   
   const savePlaceHandler = () => {
-    dispatch(addPlace(formData))
+    dispatch(addPlace(formData));
   }
   
   return (
@@ -36,8 +37,8 @@ export const PlaceForm = () => {
               value={formData.title}
           />
         </View>
-        <PlaceImagePicker/>
-        <LocationPicker/>
+        <PlaceImagePicker onImagePick={updateFormData} />
+        <LocationPicker />
         <AppButton onPress={savePlaceHandler} style={styles.button}>
           Add Place
         </AppButton>

@@ -6,11 +6,11 @@ import {
   PermissionStatus,
 } from 'expo-image-picker';
 import { useState } from 'react';
-import {Image, View, StyleSheet, Button, Alert, Text} from "react-native";
+import {Image, View, StyleSheet, Alert, Text} from "react-native";
 import {GlobalStyles} from "../../constants/styles";
 import {AppButton} from "../ui/AppButton";
 
-export const PlaceImagePicker = () => {
+export const PlaceImagePicker = ({onImagePick}) => {
   const [image, setImage] = useState(null);
   const [cameraPermissionStatus, requestCameraPermission] = useCameraPermissions();
   const [libraryPermissionStatus, requestLibraryPermission] = useMediaLibraryPermissions();
@@ -60,6 +60,7 @@ export const PlaceImagePicker = () => {
     
     if(!image.canceled) {
       setImage(image.assets[0]);
+      onImagePick('image', image.assets[0].uri)
     }
   };
   
@@ -73,7 +74,8 @@ export const PlaceImagePicker = () => {
     const image = await launchImageLibraryAsync();
     
     if(!image.canceled) {
-      setImage(image.assets[0])
+      setImage(image.assets[0]);
+      onImagePick('image', image.assets[0].uri);
     }
   };
   
