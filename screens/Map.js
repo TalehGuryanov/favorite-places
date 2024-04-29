@@ -6,9 +6,9 @@ import {useForegroundPermissions} from "expo-location";
 import {LoadingOverlay} from "../components/ui/LoadingOverlay";
 import {useDispatch, useSelector} from "react-redux";
 import {addLocation} from "../store/placesReducer";
-import {getUserLocation} from "../util/location";
+import {getAddress, getUserLocation} from "../util/location";
 
-export const Map = ({navigation, route}) => {
+export const Map = ({navigation}) => {
   const dispatch = useDispatch();
   const {location} = useSelector(state => state.places);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,11 +27,18 @@ export const Map = ({navigation, route}) => {
     }
   }, [dispatch, location]);
   
-  const selectLocationHandler = (event) => {
-    const locationPayload = {
+  const selectLocationHandler = async (event) => {
+    const locationCoords = {
       latitude: event.nativeEvent.coordinate.latitude,
       longitude: event.nativeEvent.coordinate.longitude
+    };
+    const address = await getAddress(locationCoords.latitude, locationCoords.longitude);
+    const locationPayload = {
+      latitude: locationCoords.latitude,
+      longitude: locationCoords.longitude,
+      address
     }
+    
     dispatch(addLocation(locationPayload))
   }
   

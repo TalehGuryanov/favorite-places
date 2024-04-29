@@ -1,9 +1,9 @@
-import {getCurrentPositionAsync, useForegroundPermissions, PermissionStatus} from "expo-location";
-import {useState, useEffect, useCallback} from "react";
-import {View, StyleSheet, Alert, Text, Image} from "react-native";
+import {useForegroundPermissions} from "expo-location";
+import {useState, useCallback} from "react";
+import {View, StyleSheet, Text, Image} from "react-native";
 import {AppButton} from "../ui/AppButton";
 import {GlobalStyles} from "../../constants/styles";
-import {getMapPreview, getUserLocation} from "../../util/location";
+import {getAddress, getMapPreview, getUserLocation} from "../../util/location";
 import {LoadingOverlay} from "../ui/LoadingOverlay";
 import {useNavigation} from "@react-navigation/native";
 import {useDispatch, useSelector} from "react-redux";
@@ -19,7 +19,13 @@ export const LocationPicker = () => {
   const getLocationHandler = useCallback(() => {
     (async() => {
       setIsLoading(true);
-      const locationPayload = await getUserLocation(locationPermissionStatus, requestLocationPermission);
+      const locationCoords = await getUserLocation(locationPermissionStatus, requestLocationPermission);
+      const address = await getAddress(locationCoords.latitude, locationCoords.longitude);
+      const locationPayload = {
+        latitude: locationCoords.latitude,
+        longitude: locationCoords.longitude,
+        address
+      }
       
       dispatch(addLocation(locationPayload));
       setIsLoading(false);

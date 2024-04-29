@@ -14,7 +14,7 @@ export const PlaceForm = () => {
   const [formData, setFormData] = useState({
     title: '',
     image: '',
-    location: location
+    location: ''
   });
   
   const updateFormData = useCallback((inputName, value) => {
@@ -24,6 +24,7 @@ export const PlaceForm = () => {
   } ,[setFormData])
   
   const savePlaceHandler = () => {
+    updateFormData('location', location);
     dispatch(addPlace(formData));
   }
   

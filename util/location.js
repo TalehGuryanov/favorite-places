@@ -39,3 +39,16 @@ export const getUserLocation = async (locationPermissionStatus, requestLocationP
     longitude: locationResponse.coords.longitude
   }
 };
+
+export const getAddress = async(lat, lng) => {
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}`;
+  
+  const response = await fetch(url);
+  
+  if(!response.ok) {
+    throw new Error(response.statusText);
+  }
+  
+  const data = await response.json();
+  return data.results[0].formatted_address;
+}
