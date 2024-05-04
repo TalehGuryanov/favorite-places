@@ -10,27 +10,26 @@ import {addPlace} from "../../store/placesReducer";
 import {useNavigation} from "@react-navigation/native";
 
 export const PlaceForm = () => {
-  const {location} = useSelector(state => state.places);
+  const {location, places} = useSelector(state => state.places);
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
-    title: '',
-    image: '',
-    location: '',
-    id: ''
-  });
+  const [title, setTitle] = useState('');
+  const [image, setImage] = useState('');
   const navigation = useNavigation();
   
-  const updateFormData = useCallback((inputName, value) => {
-    setFormData((prevState) => {
-     return  {...prevState, [inputName]: value}
-    });
-  } ,[setFormData])
+  const imagePickerHandler = (uri) => setImage(uri)
+  
   
   const savePlaceHandler = () => {
-    updateFormData('location', location);
-    updateFormData('id', new Date().toString() + Math.random().toString());
-    dispatch(addPlace(formData));
-    navigation.navigate('AllPlaces')
+    const id = new Date().toString() + Math.random().toString();
+    const address = location.address
+    const payload = {
+      address,
+      id,
+      title,
+      image
+    };
+    dispatch(addPlace(payload));
+    navigation.navigate('AllPlaces');
   }
   
   return (
@@ -39,11 +38,11 @@ export const PlaceForm = () => {
           <Text style={styles.label}>Title</Text>
           <TextInput
               style={styles.input}
-              onChangeText={(value) => updateFormData('title', value)}
-              value={formData.title}
+              onChangeText={(value) => setTitle(value)}
+              value={title}
           />
         </View>
-        <PlaceImagePicker onImagePick={updateFormData} />
+        <PlaceImagePicker onImagePick={imagePickerHandler} />
         <LocationPicker />
         <AppButton onPress={savePlaceHandler} style={styles.button}>
           Add Place

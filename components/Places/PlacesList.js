@@ -1,7 +1,10 @@
 import {FlatList, Text, StyleSheet, View} from "react-native";
 import {PlaceItem} from "./PlaceItem";
+import {useSelector} from "react-redux";
 
-export const PlacesList = ({places}) => {
+export const PlacesList = () => {
+  const {places} = useSelector(state => state.places);
+  
   if(!places || !places.length) {
     return <View style={styles.fallbackContainer}>
       <Text tyle={styles.fallbackText}>No Places Yet</Text>

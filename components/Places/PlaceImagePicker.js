@@ -60,7 +60,7 @@ export const PlaceImagePicker = ({onImagePick}) => {
     
     if(!image.canceled) {
       setImage(image.assets[0]);
-      onImagePick('image', image.assets[0].uri)
+      onImagePick(image.assets[0].uri);
     }
   };
   
@@ -75,7 +75,7 @@ export const PlaceImagePicker = ({onImagePick}) => {
     
     if(!image.canceled) {
       setImage(image.assets[0]);
-      onImagePick('image', image.assets[0].uri);
+      onImagePick(image.assets[0].uri);
     }
   };
   
