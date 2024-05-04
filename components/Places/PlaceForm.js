@@ -7,6 +7,7 @@ import {LocationPicker} from "./LocationPicker";
 import {AppButton} from "../ui/AppButton";
 import {useDispatch, useSelector} from "react-redux";
 import {addPlace} from "../../store/placesReducer";
+import {useNavigation} from "@react-navigation/native";
 
 export const PlaceForm = () => {
   const {location} = useSelector(state => state.places);
@@ -14,8 +15,10 @@ export const PlaceForm = () => {
   const [formData, setFormData] = useState({
     title: '',
     image: '',
-    location: ''
+    location: '',
+    id: ''
   });
+  const navigation = useNavigation();
   
   const updateFormData = useCallback((inputName, value) => {
     setFormData((prevState) => {
@@ -25,7 +28,9 @@ export const PlaceForm = () => {
   
   const savePlaceHandler = () => {
     updateFormData('location', location);
+    updateFormData('id', new Date().toString() + Math.random().toString());
     dispatch(addPlace(formData));
+    navigation.navigate('AllPlaces')
   }
   
   return (
