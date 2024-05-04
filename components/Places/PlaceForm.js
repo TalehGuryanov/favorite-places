@@ -1,5 +1,5 @@
 import {ScrollView, View, Text, TextInput, StyleSheet} from "react-native";
-import {useCallback, useState} from "react";
+import {useState} from "react";
 
 import {GlobalStyles} from "../../constants/styles";
 import {PlaceImagePicker} from "./PlaceImagePicker";
@@ -10,7 +10,7 @@ import {addPlace} from "../../store/placesReducer";
 import {useNavigation} from "@react-navigation/native";
 
 export const PlaceForm = () => {
-  const {location, places} = useSelector(state => state.places);
+  const {location} = useSelector(state => state.places);
   const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const [image, setImage] = useState('');

@@ -22,7 +22,7 @@ export default function App() {
           screenOptions={{
             headerStyle: {backgroundColor: GlobalStyles.colors.primary500},
             headerTintColor: GlobalStyles.colors.gray700,
-            contentStyle: {backgroundColor: GlobalStyles.colors.white}
+            contentStyle: {backgroundColor: GlobalStyles.colors.primary800}
           }}
         >
           <Stack.Screen
@@ -69,7 +69,3 @@ export default function App() {
     </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-
-});
