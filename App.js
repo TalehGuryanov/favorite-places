@@ -11,10 +11,26 @@ import {GlobalStyles} from "./constants/styles";
 import {IconButton} from "./components/ui/IconButton";
 import {PlaceDetails} from "./screens/PlaceDetails";
 import {Map} from "./screens/Map";
+import {useEffect, useState} from "react";
+import {initDatabase} from "./util/database";
+import {LoadingOverlay} from "./components/ui/LoadingOverlay";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [isDbInit, setDbInit] = useState(false);
+  
+  useEffect(() => {
+    initDatabase()
+        .then(() => setDbInit(true))
+        .catch(error => console.log(error));
+    ;
+  }, [])
+  
+  if(!isDbInit) {
+    return <LoadingOverlay/>
+  }
+  
   return (
     <Provider store={store}>
       <NavigationContainer>
