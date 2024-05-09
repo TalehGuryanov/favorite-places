@@ -12,8 +12,8 @@ const placesSlice = createSlice({
   name: 'places',
   initialState,
   reducers: {
-    addPlace(state, action) {
-      state.places.push(action.payload)
+    addPlaces(state, action) {
+      state.places = action.payload;
     },
     removePlace(state, action) {
       const index = state.places.findIndex(item => item.id === action.payload);
@@ -27,5 +27,5 @@ const placesSlice = createSlice({
   }
 })
 
-export const {addPlace, removePlace, addLocation} = placesSlice.actions;
+export const {addPlaces, removePlace, addLocation} = placesSlice.actions;
 export default placesSlice.reducer;

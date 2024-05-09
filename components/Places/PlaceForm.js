@@ -6,13 +6,11 @@ import {PlaceImagePicker} from "./PlaceImagePicker";
 import {LocationPicker} from "./LocationPicker";
 import {AppButton} from "../ui/AppButton";
 import {useDispatch, useSelector} from "react-redux";
-import {addPlace} from "../../store/placesReducer";
 import {useNavigation} from "@react-navigation/native";
 import {insertPlace} from "../../util/database";
 
 export const PlaceForm = () => {
   const {location} = useSelector(state => state.places);
-  const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const [image, setImage] = useState('');
   const navigation = useNavigation();
@@ -21,17 +19,14 @@ export const PlaceForm = () => {
   
   
   const savePlaceHandler = () => {
-    const id = new Date().toString() + Math.random().toString();
     const {address, latitude, longitude} = location;
     const payload = {
       address,
-      id,
       title,
-      image,
+      imageUri: image,
       lat: latitude,
       lng: longitude
     };
-    dispatch(addPlace(payload));
     insertPlace(payload)
         .then(() => navigation.navigate('AllPlaces'))
         .catch((err) => console.log(err));

@@ -32,7 +32,7 @@ export const insertPlace = (place) => {
     database.transaction((tx) => {
       tx.executeSql(
           `INSERT INTO places (title, imageUri, address, lat, lng) VALUES (?, ?, ?, ?, ?)`,
-          [place.title, place.image, place.address, place.lat, place.lng],
+          [place.title, place.imageUri, place.address, place.lat, place.lng],
           (_, result) => {
             resolve(result)
           },
@@ -43,3 +43,19 @@ export const insertPlace = (place) => {
     })
   })
 };
+
+export const getPlaces = () => {
+  return new Promise((resolve, reject) => {
+    database.transaction((tx) => {
+      tx.executeSql('SELECT * FROM places',
+          [],
+          (_, result) => {
+            resolve(result);
+          },
+          (_, err) => {
+            reject(err);
+          }
+      )
+    })
+  })
+}
