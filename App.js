@@ -1,5 +1,4 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from 'react-redux';
@@ -24,8 +23,8 @@ export default function App() {
     initDatabase()
         .then(() => setDbInit(true))
         .catch(error => console.log(error));
-    ;
-  }, [])
+    
+  }, []);
   
   if(!isDbInit) {
     return <LoadingOverlay/>
