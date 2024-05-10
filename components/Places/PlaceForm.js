@@ -5,11 +5,13 @@ import {GlobalStyles} from "../../constants/styles";
 import {PlaceImagePicker} from "./PlaceImagePicker";
 import {LocationPicker} from "./LocationPicker";
 import {AppButton} from "../ui/AppButton";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {useNavigation} from "@react-navigation/native";
 import {insertPlace} from "../../util/database";
+import {useSQLiteContext} from "expo-sqlite";
 
 export const PlaceForm = () => {
+  const db = useSQLiteContext();
   const {location} = useSelector(state => state.places);
   const [title, setTitle] = useState('');
   const [image, setImage] = useState('');
@@ -18,7 +20,7 @@ export const PlaceForm = () => {
   const imagePickerHandler = (uri) => setImage(uri)
   
   
-  const savePlaceHandler = () => {
+  const savePlaceHandler = async () => {
     const {address, latitude, longitude} = location;
     const payload = {
       address,
@@ -27,9 +29,12 @@ export const PlaceForm = () => {
       lat: latitude,
       lng: longitude
     };
-    insertPlace(payload)
-        .then(() => navigation.navigate('AllPlaces'))
-        .catch((err) => console.log(err));
+    try {
+      await insertPlace(db, payload)
+      navigation.navigate('AllPlaces');
+    } catch (err) {
+      console.log(err)
+    }
   }
   
   return (
